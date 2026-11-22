@@ -3,6 +3,7 @@ const User = require("../models/userModel")
 const bcryptjs = require('bcryptjs')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
+
 const register = async(req, res)=>{
     try{
       const{name,email,password} = req.body
@@ -18,10 +19,12 @@ const register = async(req, res)=>{
       const salt = bcryptjs.genSaltSync(8)
       const bcryptpassword = bcryptjs.hashSync(password,salt)
       console.log(bcryptpassword)
+      const profileImage = req.file ? `upload/profile/${req.file.filename}`: null
       const newUser = await User.create({
         name:name,
         email:email,
-        password:bcryptpassword
+        password:bcryptpassword,
+        profileImage:profileImage
       })
       if(newUser){
         res.status(200).send({msg:"Regidtered Successfully", success:true})
@@ -76,7 +79,8 @@ const getUserInfo = async(req, res)=>{
        const updatedUser = {
         name:user.name,
         email:user.email,
-        role:user.role
+        role:user.role,
+        profileImage: user.profileImage ? `http://localhost:7011/${user.profileImage}` : null
        }
       res.status(200).send({user:updatedUser})
 
@@ -84,6 +88,7 @@ const getUserInfo = async(req, res)=>{
         res.status(500).send({msg:"Server Error", success:false})
     }
 }
+// http://localhost:7011/upload/profile/1795352913342..jpg
 
 
 const getAllUsers = async(req, res) => {
