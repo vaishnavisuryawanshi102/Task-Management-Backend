@@ -4,6 +4,7 @@ require('dotenv').config()
 const{connectDB} = require('./config/db')
 const taskRoute = require('./routes/taskRoute')
 const userRoute = require('./routes/userRoutes')
+const Path = require('path')
 
 const app = express()
 const port = process.env.PORT || 7011
@@ -16,6 +17,7 @@ app.use(cors())
 app.get('/', (req, res)=> res.send('Hello World!'))
 app.use('/api/task', taskRoute)
 app.use('/api/user',userRoute)
+app.use("/upload", express.static(Path.join(__dirname, "upload")))
 
 
 app.listen(port,()=> console.log(`Example app listening on port ${port}!`))
