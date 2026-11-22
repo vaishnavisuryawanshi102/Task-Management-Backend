@@ -1,7 +1,8 @@
 const { where } = require("sequelize")
 const User = require("../models/userModel")
 const bcryptjs = require('bcryptjs')
-
+require('dotenv').config()
+const jwt = require('jsonwebtoken')
 const register = async(req, res)=>{
     try{
       const{name,email,password} = req.body
@@ -22,27 +23,82 @@ const register = async(req, res)=>{
         email:email,
         password:bcryptpassword
       })
+      if(newUser){
+        res.status(200).send({msg:"Regidtered Successfully", success:true})
+      }else{
+        res.status(400).send({msg:"Not Registered Contact admin", success:false})
+      }
 
     }catch(error){
         res.status(500).send({msg:"Server Error", success:false})
     }
 }
 
-const login = ()=>{
+const login = async(req , res)=>{
     try{
+      const {email,password} = req.body
+      
+      if(!email || !password){
+        return res.status(400).send({msg:"please provide name, email and password" ,success:false})
+      }
+      const existingUser = await User.findOne({
+        where:{email}
+      })
+
+      if(!existingUser){
+        return res.status(400).send({msg:"please provide correct email" ,success:false})
+      }
+      const checkpassword = bcryptjs.compareSync(password, existingUser.password)
+      console.log(checkpassword, "Check Password")
+      if(!checkpassword){
+        return res.status(400).send({msg:"please provide correct password" ,success:false})
+      }
+      const payload = {id:existingUser.id, role:existingUser.role}
+      console.log("SECRET KEY:", process.env.SECRET_KEY)
+      console.log("PAYLOAD:", payload)
+      const token = jwt.sign(payload, process.env.SECRET_KEY, {expiresIn:'1hr'})
+      console.log(token,"TOKEN")
+      res.status(200).send({msg:"Login Successfull", token:token, success:true})
+
+       
+
+
 
     }catch{
         res.status(500).send({msg:"Server Error", success:false})
     }
 }
 
-const getUserInfo = ()=>{
+const getUserInfo = async(req, res)=>{
     try{
+       const ID =  req.user.id
+       const user = await User.findByPk(ID)
+       const updatedUser = {
+        name:user.name,
+        email:user.email,
+        role:user.role
+       }
+      res.status(200).send({user:updatedUser})
 
     }catch{
         res.status(500).send({msg:"Server Error", success:false})
     }
 }
+
+
+const getAllUsers = async(req, res) => {
+    try {
+      const users = await User.findAll({attributes: {exclude: ['password']
+    }
+    })
+      res.status(200).send({users: users,success: true})
+
+    }catch(error) {
+    console.log(error)
+    res.status(500).send({msg: "Server Error",success: false})
+    }
+}
+
 module.exports = {
-    register,login,getUserInfo
+    register,login,getUserInfo, getAllUsers
 }
