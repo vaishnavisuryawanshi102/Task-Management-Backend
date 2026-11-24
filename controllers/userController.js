@@ -104,6 +104,18 @@ const getAllUsers = async(req, res) => {
     }
 }
 
+function updatePassword(req,res){
+   //req.body.password
+   //match with old one
+   //or
+   //direct update new password by using bcryptjs
+}
+
+function updateUser(req, res){
+  //can update all field
+}
+
 module.exports = {
-    register,login,getUserInfo, getAllUsers
+    register,login,getUserInfo, getAllUsers,updatePassword,
+    updateUser
 }

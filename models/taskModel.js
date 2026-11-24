@@ -31,12 +31,17 @@ const Task = sequelize.define("Task", {
 
     },
     StartDate:{
-        type:DataTypes.DATEONLY(),
+        type:DataTypes.DATEONLY,
         allowNull:false
 
     },
     endDate:{
-        type:DataTypes.DATEONLY(),
+        type:DataTypes.DATEONLY,
+        allowNull:false
+
+    },
+    createdBy:{
+        type:DataTypes.INTEGER,
         allowNull:false
 
     }
@@ -47,4 +52,9 @@ const Task = sequelize.define("Task", {
     updatedAt: "updated_at"
 }
 )
+
+
+
+
+
 module.exports = Task

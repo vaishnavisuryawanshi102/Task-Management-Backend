@@ -8,13 +8,12 @@ function auth(req, res, next){
     }
      const token = tokenReq.split(" ")[1]
      console.log(token, "this is exact token")
-     decoderUser = jwt.verify(token,process.env.SECRET_KEY)
+     const decoderUser = jwt.verify(token,process.env.SECRET_KEY)
      console.log(decoderUser)
      req.user = decoderUser
 
     next()
 }
-
 
 function admin(req, res, next){
     console.log("USER ROLE:", req.user.role)
